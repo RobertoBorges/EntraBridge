@@ -30,8 +30,5 @@ public class IndexModel : PageModel
 
             throw ex;
         }
-
-        
-
     }
 }

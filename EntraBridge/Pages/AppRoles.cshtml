@@ -1,0 +1,27 @@
+@page
+@{
+    ViewData["Title"] = "Assign App Roles";
+}
+// ...existing layout code...
+<h1 class="text-center my-4">Assign App Roles</h1>
+<div class="container">
+    <form method="post" action="/ReviewAndCreate">
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="roleAdmin" name="roles" value="Admin" />
+            <label class="form-check-label" for="roleAdmin">Admin</label>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="roleUser" name="roles" value="User" />
+            <label class="form-check-label" for="roleUser">User</label>
+        </div>
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="roleViewer" name="roles" value="Viewer" />
+            <label class="form-check-label" for="roleViewer">Viewer</label>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="/AddApplication" class="btn btn-secondary">Previous</a>
+            <button type="submit" class="btn btn-primary">Next: Review &amp; Create</button>
+        </div>
+    </form>
+</div>
+// ...existing code...

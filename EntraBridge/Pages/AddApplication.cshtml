@@ -1,0 +1,55 @@
+@page
+@{
+    ViewData["Title"] = "Add New Application";
+}
+// ...existing layout code...
+<h1 class="text-center my-4">Add New Application</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form id="appForm" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="appName" class="form-label">Application Name:</label>
+                    <input type="text" id="appName" name="appName" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label for="appType" class="form-label">Application Type:</label>
+                    <select id="appType" name="appType" class="form-select">
+                        <option value="Web">Web</option>
+                        <option value="Native">Native</option>
+                        <option value="Service">Service</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="redirectUri" class="form-label">Redirect URI:</label>
+                    <input type="url" id="redirectUri" name="redirectUri" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label for="replyUri" class="form-label">Reply URI:</label>
+                    <input type="url" id="replyUri" name="replyUri" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="logo" class="form-label">Logo URL:</label>
+                    <input type="url" id="logo" name="logo" class="form-control" />
+                </div>
+                <div class="d-grid">
+                    <button type="button" class="btn btn-primary" onclick="saveAndNext()">Next: Assign Roles</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<p class="text-center mt-4">This page will allow you to add a new application.</p>
+<script>
+    function saveAndNext() {
+        var appData = {
+            appName: document.getElementById('appName').value,
+            appType: document.getElementById('appType').value,
+            redirectUri: document.getElementById('redirectUri').value,
+            replyUri: document.getElementById('replyUri').value,
+            logo: document.getElementById('logo').value
+        };
+        sessionStorage.setItem('appData', JSON.stringify(appData));
+        window.location.href = '/AppRoles';
+    }
+</script>
