@@ -1,7 +1,262 @@
 @page
+@model EntraBridge.Pages.ListApplicationsModel
 @{
     ViewData["Title"] = "List Applications";
 }
 // ...existing layout code...
-<h1>List Applications</h1>
-<p>This page will display a list of applications.</p>
+
+<div class="container">
+    <h1 class="text-center my-4">Applications</h1>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <a class="nav-link active" href="#all" data-bs-toggle="tab">All applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#owned" data-bs-toggle="tab">Owned applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#deleted" data-bs-toggle="tab">Deleted applications</a>
+        </li>
+    </ul>
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <!-- Search and Filter -->
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control" id="searchInput" placeholder="Start typing a display name or application (client) ID to filter these results">
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-2 mb-3">
+        <span id="applicationCount">@Model.Applications.Count</span> applications found
+    </div>
+
+    <!-- Applications Table -->
+    <div class="table-responsive">
+        <table class="table table-hover" id="applicationsTable">
+            <thead>
+                <tr>
+                    <th scope="col">Display name <i class="bi bi-arrow-up-short"></i></th>
+                    <th scope="col">Application (client) ID</th>
+                    <th scope="col">Created on <i class="bi bi-arrow-down-short"></i></th>
+                    <th scope="col">Certificates & secrets</th>
+                </tr>
+            </thead>
+            <tbody id="applicationsTableBody">
+                @foreach (var app in Model.Applications)
+                {
+                    <tr>
+                        <td>
+                            @{
+                                string typeClass = "bg-primary";
+                                if (app.ApplicationType == "W")
+                                    typeClass = "bg-success";
+                                else if (app.ApplicationType == "IA")
+                                    typeClass = "bg-info";
+                            }
+                            <span class="@typeClass text-white px-2 rounded-1">@app.ApplicationType</span> @app.DisplayName
+                        </td>
+                        <td>@app.ApplicationId</td>
+                        <td>@app.CreatedOn.ToString("M/d/yyyy")</td>
+                        <td>
+                            @if (app.HasSecrets)
+                            {
+                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Current</span>
+                            }
+                            else
+                            {
+                                <span>-</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Applications.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center">No applications found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Load More -->
+    @if ((bool)(ViewData["HasMoreRecords"] ?? false))
+    {
+        <div class="text-center mt-3 mb-4" id="loadMoreContainer">
+            <button id="loadMoreButton" class="btn btn-outline-primary" 
+                   data-next-page="@ViewData["NextPage"]" 
+                   data-next-token="@ViewData["NextPageToken"]">
+                Load More Applications
+            </button>
+            <div id="loadingSpinner" class="spinner-border text-primary d-none" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+
+    <div class="d-flex justify-content-between mt-4">
+        <a href="/AppRoles" class="btn btn-secondary">Back</a>
+        <a href="/AddApplication" class="btn btn-primary">Add New Application</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Count displayed applications and update the counter
+        const updateAppCount = () => {
+            const visibleRows = document.querySelectorAll('#applicationsTable tbody tr:not(.d-none)').length;
+            document.getElementById('applicationCount').textContent = visibleRows;
+        };
+
+        // Filter functionality
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#applicationsTable tbody tr');
+            
+            rows.forEach(row => {
+                const displayName = row.cells[0]?.textContent.toLowerCase() || '';
+                const clientId = row.cells[1]?.textContent.toLowerCase() || '';
+                
+                if (displayName.includes(searchTerm) || clientId.includes(searchTerm)) {
+                    row.classList.remove('d-none');
+                } else {
+                    row.classList.add('d-none');
+                }
+            });
+            
+            updateAppCount();
+        });
+
+        // Load more functionality
+        const loadMoreButton = document.getElementById('loadMoreButton');
+        if (loadMoreButton) {
+            loadMoreButton.addEventListener('click', async function() {
+                // Show loading spinner
+                loadMoreButton.classList.add('d-none');
+                document.getElementById('loadingSpinner').classList.remove('d-none');
+                
+                try {
+                    const nextPage = this.getAttribute('data-next-page');
+                    const nextToken = this.getAttribute('data-next-token');
+                    
+                    // Make AJAX call to load more data
+                    const response = await fetch(`?handler=LoadMore&page=${nextPage}&nextPage=${encodeURIComponent(nextToken || '')}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        credentials: 'include'
+                    });
+                    
+                    if (!response.ok) {
+                        console.error('Server responded with:', response.status, response.statusText);
+                        throw new Error('Failed to load more applications');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Check for error in the response
+                    if (data.error) {
+                        console.error('Error from server:', data.error);
+                        throw new Error(data.error);
+                    }
+                    
+                    // Append new applications to the table
+                    const tbody = document.getElementById('applicationsTableBody');
+                    
+                    data.applications.forEach(app => {
+                        // Only add if this is a new application (avoid duplicates)
+                        const existingRows = Array.from(tbody.querySelectorAll('tr')).map(row => 
+                            row.cells[1]?.textContent.trim());
+                        
+                        if (!existingRows.includes(app.applicationId)) {
+                            const row = document.createElement('tr');
+                            
+                            // Display name with app type
+                            const tdName = document.createElement('td');
+                            const spanType = document.createElement('span');
+                            spanType.className = 'bg-primary text-white px-2 rounded-1';
+                            spanType.textContent = app.applicationType;
+                            tdName.appendChild(spanType);
+                            tdName.appendChild(document.createTextNode(' ' + app.displayName));
+                            row.appendChild(tdName);
+                            
+                            // Application ID
+                            const tdId = document.createElement('td');
+                            tdId.textContent = app.applicationId;
+                            row.appendChild(tdId);
+                            
+                            // Created date
+                            const tdCreated = document.createElement('td');
+                            const createdDate = new Date(app.createdOn);
+                            tdCreated.textContent = (createdDate.getMonth() + 1) + '/' + 
+                                                     createdDate.getDate() + '/' + 
+                                                     createdDate.getFullYear();
+                            row.appendChild(tdCreated);
+                            
+                            // Secrets status
+                            const tdSecrets = document.createElement('td');
+                            if (app.hasSecrets) {
+                                const secretSpan = document.createElement('span');
+                                secretSpan.className = 'text-success';
+                                const secretIcon = document.createElement('i');
+                                secretIcon.className = 'bi bi-check-circle-fill';
+                                secretSpan.appendChild(secretIcon);
+                                secretSpan.appendChild(document.createTextNode(' Current'));
+                                tdSecrets.appendChild(secretSpan);
+                            } else {
+                                tdSecrets.textContent = '-';
+                            }
+                            row.appendChild(tdSecrets);
+                            
+                            tbody.appendChild(row);
+                        }
+                    });
+                    
+                    // Update load more button with new page token
+                    if (data.hasMoreRecords) {
+                        loadMoreButton.setAttribute('data-next-page', data.nextPage);
+                        loadMoreButton.setAttribute('data-next-token', data.nextPageToken);
+                        loadMoreButton.classList.remove('d-none');
+                    } else {
+                        // No more records, hide the load more container
+                        document.getElementById('loadMoreContainer').classList.add('d-none');
+                    }
+                    
+                    // Update application count
+                    updateAppCount();
+                    
+                } catch (error) {
+                    console.error('Error loading more applications:', error);
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-3';
+                    errorDiv.textContent = 'Failed to load more applications. Please try again.';
+                    document.getElementById('loadMoreContainer').insertAdjacentElement('afterend', errorDiv);
+                    
+                    // Re-enable load more button
+                    loadMoreButton.classList.remove('d-none');
+                } finally {
+                    // Hide loading spinner
+                    document.getElementById('loadingSpinner').classList.add('d-none');
+                }
+            });
+        }
+
+        // Initial count update
+        updateAppCount();
+    });
+</script>

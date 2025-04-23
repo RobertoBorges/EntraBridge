@@ -7,8 +7,8 @@ using Microsoft.Identity.Web;
 
 namespace EntraBridge.Pages;
 
-[AuthorizeForScopes(ScopeKeySection = "MicrosoftGraph:Scopes")]
 [Authorize]
+[AuthorizeForScopes(ScopeKeySection = "MicrosoftGraph:Scopes")]
 public class IndexModel : PageModel
 {
     private readonly GraphServiceClient _graphServiceClient;
