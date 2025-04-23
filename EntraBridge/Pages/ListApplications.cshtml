@@ -3,8 +3,6 @@
 @{
     ViewData["Title"] = "List Applications";
 }
-// ...existing layout code...
-
 <div class="container">
     <h1 class="text-center my-4">Applications</h1>
 
@@ -50,7 +48,6 @@
                     <th scope="col">Display name <i class="bi bi-arrow-up-short"></i></th>
                     <th scope="col">Application (client) ID</th>
                     <th scope="col">Created on <i class="bi bi-arrow-down-short"></i></th>
-                    <th scope="col">Certificates & secrets</th>
                 </tr>
             </thead>
             <tbody id="applicationsTableBody">
@@ -69,16 +66,6 @@
                         </td>
                         <td>@app.ApplicationId</td>
                         <td>@app.CreatedOn.ToString("M/d/yyyy")</td>
-                        <td>
-                            @if (app.HasSecrets)
-                            {
-                                <span class="text-success"><i class="bi bi-check-circle-fill"></i> Current</span>
-                            }
-                            else
-                            {
-                                <span>-</span>
-                            }
-                        </td>
                     </tr>
                 }
                 @if (!Model.Applications.Any())
@@ -152,7 +139,7 @@
                     const nextToken = this.getAttribute('data-next-token');
                     
                     // Make AJAX call to load more data
-                    const response = await fetch(`?handler=LoadMore&page=${nextPage}&nextPage=${encodeURIComponent(nextToken || '')}`, {
+                    const response = await fetch(`?handler=LoadMore&currentPage=${nextPage}&nextToken=${encodeURIComponent(nextToken || '')}`, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json',
@@ -206,23 +193,7 @@
                                                      createdDate.getDate() + '/' + 
                                                      createdDate.getFullYear();
                             row.appendChild(tdCreated);
-                            
-                            // Secrets status
-                            const tdSecrets = document.createElement('td');
-                            if (app.hasSecrets) {
-                                const secretSpan = document.createElement('span');
-                                secretSpan.className = 'text-success';
-                                const secretIcon = document.createElement('i');
-                                secretIcon.className = 'bi bi-check-circle-fill';
-                                secretSpan.appendChild(secretIcon);
-                                secretSpan.appendChild(document.createTextNode(' Current'));
-                                tdSecrets.appendChild(secretSpan);
-                            } else {
-                                tdSecrets.textContent = '-';
-                            }
-                            row.appendChild(tdSecrets);
-                            
-                            tbody.appendChild(row);
+                            tbody.appendChild(row);                            
                         }
                     });
                     

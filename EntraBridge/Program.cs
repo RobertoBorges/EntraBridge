@@ -11,6 +11,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using EntraBridge.Helpers;
+using EntraBridge.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Graph.ExternalConnectors;
 
@@ -35,6 +36,9 @@ var cookieScheme = CookieAuthenticationDefaults.AuthenticationScheme;
 
 builder.Services.Configure<CookieAuthenticationOptions>(cookieScheme, options =>
             options.Events = new RejectSessionCookieWhenAccountNotInCacheEvents());
+
+// Add the service registration
+builder.Services.AddScoped<GraphApplicationService>();
 
 // Set authentication options for all schemes
 foreach (var scheme in AuthScheme.All)
