@@ -6,84 +6,101 @@
     <title>@ViewData["Title"] - EntraBridge</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <style>
-        /* Remove previous display rules */
-        /* New styles will be defined in CSS file */
-    </style>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Add Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <!-- Removed toggle button from header -->
+    <header class="app-header">
+        <nav class="navbar navbar-expand navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand d-flex align-items-center" href="/">
+                    <i class="fas fa-project-diagram me-2"></i>
+                    <span class="brand-text">EntraBridge</span>
+                </a>
+                <div class="user-profile-section">
+                    <partial name="_LoginPartial" />
+                </div>
             </div>
         </nav>
     </header>
+    
     <div class="container-fluid">
         <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar sidebar-expanded">
-                <div class="position-sticky pt-3 d-flex flex-column">
-                    <ul class="nav flex-column flex-grow-1">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky sidebar-content">
+                    <div class="sidebar-header mb-4">
+                        <i class="fas fa-project-diagram me-2"></i>
+                        Application Management
+                    </div>
+                    <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/Index" ? " fw-bold" : ""))" aria-current="page" asp-area="" asp-page="/Index">
-                                Home
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/Index" ? " active" : ""))" aria-current="page" asp-area="" asp-page="/Index">
+                                <i class="fas fa-home me-2"></i>Home
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/AddApplication" ? " fw-bold" : ""))" asp-area="" asp-page="/AddApplication">
-                                Add new Application
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/AddApplication" ? " active" : ""))" asp-area="" asp-page="/AddApplication">
+                                <i class="fas fa-plus-circle me-2"></i>Add Application
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/ListApplications" ? " fw-bold" : ""))" asp-area="" asp-page="/ListApplications">
-                                List Applications
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/ListApplications" ? " active" : ""))" asp-area="" asp-page="/ListApplications">
+                                <i class="fas fa-list me-2"></i>List Applications
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/EditApplication" ? " fw-bold" : ""))" asp-area="" asp-page="/EditApplication">
-                                Edit Application
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/EditApplication" ? " active" : ""))" asp-area="" asp-page="/EditApplication">
+                                <i class="fas fa-edit me-2"></i>Edit Application
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/DeleteApplication" ? " fw-bold" : ""))" asp-area="" asp-page="/DeleteApplication">
-                                Delete Application
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/DeleteApplication" ? " active" : ""))" asp-area="" asp-page="/DeleteApplication">
+                                <i class="fas fa-trash-alt me-2"></i>Delete Application
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/ApproveRequest" ? " fw-bold" : ""))" asp-area="" asp-page="/ApproveRequest">
-                                Approve Request
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/ApproveRequest" ? " active" : ""))" asp-area="" asp-page="/ApproveRequest">
+                                <i class="fas fa-check-circle me-2"></i>Approve Request
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/CheckStatusApproval" ? " fw-bold" : ""))" asp-area="" asp-page="/CheckStatusApproval">
-                                Check Status Approval
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/CheckStatusApproval" ? " active" : ""))" asp-area="" asp-page="/CheckStatusApproval">
+                                <i class="fas fa-tasks me-2"></i>Check Status
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/ManagePermissions" ? " fw-bold" : ""))" asp-area="" asp-page="/ManagePermissions">
-                                Manage Permissions
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/ManagePermissions" ? " active" : ""))" asp-area="" asp-page="/ManagePermissions">
+                                <i class="fas fa-lock me-2"></i>Manage Permissions
                             </a>
                         </li>
-                        <!-- Basic navigation -->
                         <li class="nav-item">
-                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/Privacy" ? " fw-bold" : ""))" asp-area="" asp-page="/Privacy">
-                                Privacy
+                            <a class="@("nav-link" + (ViewContext.RouteData.Values["page"]?.ToString() == "/Privacy" ? " active" : ""))" asp-area="" asp-page="/Privacy">
+                                <i class="fas fa-shield-alt me-2"></i>Privacy
                             </a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
                 </div>
             </nav>
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <div class="pb-3">
+                <div class="content-wrapper">
                     @RenderBody()
                 </div>
             </main>
         </div>
     </div>
-    <footer class="border-bottom footer text-muted">
+    
+    <footer class="footer">
         <div class="container">
-            &copy; 2025 - EntraBridge - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2025 EntraBridge - Simplifying Entra ID Management</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a asp-area="" asp-page="/Privacy" class="text-decoration-none footer-link">Privacy</a>
+                </div>
+            </div>
         </div>
     </footer>
 

@@ -1,17 +1,26 @@
 @using System.Security.Principal
 
-<ul class="navbar-nav">
+<ul class="navbar-nav ms-auto d-flex align-items-center">
 @if (User.Identity?.IsAuthenticated == true)
 {
-        <span class="navbar-text text-dark">Hello @User.Identity?.Name!</span>
+        <li class="nav-item me-3">
+            <span class="text-white d-flex align-items-center">
+                <i class="fas fa-user-circle me-1"></i>
+                <span>@User.Identity?.Name</span>
+            </span>
+        </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a>
+            <a class="nav-link text-white btn btn-outline-light btn-sm px-3" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">
+                <i class="fas fa-sign-out-alt me-1"></i>Sign out
+            </a>
         </li>
 }
 else
 {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a>
+            <a class="nav-link text-white btn btn-outline-light btn-sm px-3" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">
+                <i class="fas fa-sign-in-alt me-1"></i>Sign in
+            </a>
         </li>
 }
 </ul>
