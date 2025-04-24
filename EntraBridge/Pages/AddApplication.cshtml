@@ -2,54 +2,533 @@
 @{
     ViewData["Title"] = "Add New Application";
 }
-// ...existing layout code...
-<h1 class="text-center my-4">Add New Application</h1>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <form id="appForm" class="needs-validation" novalidate>
-                <div class="mb-3">
-                    <label for="appName" class="form-label">Application Name:</label>
-                    <input type="text" id="appName" name="appName" class="form-control" required />
+
+<div class="container mt-4">
+    <!-- Progress Bar -->
+    <div class="progress mb-4" style="height: 30px;">
+        <div id="progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 12.5%; font-size: 16px; font-weight: 500;" aria-valuenow="12.5" aria-valuemin="0" aria-valuemax="100">Step 1</div>
+    </div>
+
+    <!-- Step Indicators -->
+    <div class="step-indicators mb-5">
+        <div class="position-relative d-flex justify-content-between">
+            <div class="step-item active">
+                <div class="step-circle">1</div>
+                <div class="step-label">Basic Info</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">2</div>
+                <div class="step-label">Authentication</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">3</div>
+                <div class="step-label">API Permissions</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">4</div>
+                <div class="step-label">Expose API</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">5</div>
+                <div class="step-label">Certificates</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">6</div>
+                <div class="step-label">Token Config</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">7</div>
+                <div class="step-label">App Roles</div>
+            </div>
+            <div class="step-item">
+                <div class="step-circle">8</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary">
+            <h5 id="step-title" class="mb-0 text-white">Step 1: Basic Application Information</h5>
+        </div>
+        <div class="card-body">
+            <!-- Form Steps Container -->
+            <div id="form-container">
+                <!-- Step 1: Basic App Information -->
+                <div class="step-content" id="step-1">
+                    <div class="mb-3">
+                        <label for="displayName" class="form-label fw-bold">Display name*</label>
+                        <input type="text" class="form-control" id="displayName" name="displayName" required>
+                        <div class="form-text">This is the name that will be displayed for your application.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Application (client) ID</label>
+                        <p class="form-control-plaintext text-muted">Will be generated upon creation</p>
+                    </div>
+                    <div class="mb-3">
+                        <label for="applicationTemplateId" class="form-label fw-bold">Template Selection</label>
+                        <select class="form-select" id="applicationTemplateId" name="applicationTemplateId">
+                            <option selected value="">None</option>
+                            <option value="web-app">Web application</option>
+                            <option value="spa">Single-page application</option>
+                            <option value="native-app">Native application</option>
+                            <option value="service">Backend service</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label fw-bold">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="publisherDomain" class="form-label fw-bold">Publisher domain</label>
+                        <input type="text" class="form-control" id="publisherDomain" name="publisherDomain" value="nonprodborges.com" disabled>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="appType" class="form-label">Application Type:</label>
-                    <select id="appType" name="appType" class="form-select">
-                        <option value="Web">Web</option>
-                        <option value="Native">Native</option>
-                        <option value="Service">Service</option>
-                    </select>
+
+                <!-- Step 2: Authentication -->
+                <div class="step-content d-none" id="step-2">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Platform configuration</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="webPlatform" name="platforms" value="web">
+                            <label class="form-check-label" for="webPlatform">Web</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="spaPlatform" name="platforms" value="spa">
+                            <label class="form-check-label" for="spaPlatform">Single-page application</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="mobilePlatform" name="platforms" value="mobile">
+                            <label class="form-check-label" for="mobilePlatform">Mobile and desktop</label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Redirect URIs</label>
+                        <p class="text-muted small">URIs to which the authentication response can be sent.</p>
+                        <div class="mb-2">
+                            <input type="url" class="form-control mb-2" id="redirectUri" name="redirectUri" placeholder="https://example.com/auth">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="addRedirectUri">Add URI</button>
+                        </div>
+                        <ul class="list-group" id="redirectUriList">
+                            <!-- Redirect URIs will be added here -->
+                        </ul>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Front-channel logout URL</label>
+                        <input type="url" class="form-control" id="logoutUrl" name="logoutUrl" placeholder="https://example.com/logout">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Implicit grant and hybrid flows</label>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="accessTokens" name="implicitGrant" value="accessTokens">
+                            <label class="form-check-label" for="accessTokens">Access tokens</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="idTokens" name="implicitGrant" value="idTokens" checked>
+                            <label class="form-check-label" for="idTokens">ID tokens</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="redirectUri" class="form-label">Redirect URI:</label>
-                    <input type="url" id="redirectUri" name="redirectUri" class="form-control" required />
+
+                <!-- Step 3: API Permissions -->
+                <div class="step-content d-none" id="step-3">
+                    <div class="mb-3">
+                        <p>Configure API permissions that this application will request.</p>
+                        <button type="button" class="btn btn-primary" id="addPermissionBtn">Add a permission</button>
+                    </div>
+
+                    <table class="table table-bordered table-hover mt-4">
+                        <thead class="table-light">
+                            <tr>
+                                <th>API / Permissions name</th>
+                                <th>Type</th>
+                                <th>Admin consent required</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissionsTable">
+                            <tr>
+                                <td>Microsoft Graph</td>
+                                <td class="text-muted">Delegated</td>
+                                <td>Yes</td>
+                                <td><span class="badge bg-success">Granted</span></td>
+                            </tr>
+                            <!-- More permissions would be added dynamically -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="mb-3">
-                    <label for="replyUri" class="form-label">Reply URI:</label>
-                    <input type="url" id="replyUri" name="replyUri" class="form-control" />
+
+                <!-- Step 4: Expose an API -->
+                <div class="step-content d-none" id="step-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Application ID URI</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="apiUri" name="apiUri" value="api://5cebd87a-57a8-411b-8085-4644055c9a5c" disabled>
+                            <button class="btn btn-outline-primary" type="button">Edit</button>
+                        </div>
+                        <small class="text-muted">This ID uniquely identifies this API.</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Scopes defined by this API</label>
+                        <p>Define custom scopes to restrict access to data and functionality protected by this API.</p>
+                        <button type="button" class="btn btn-primary" id="addScopeBtn">Add a scope</button>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Authorized client applications</label>
+                        <p>Authorizing a client application indicates that this API trusts the application and users should not be asked to consent.</p>
+                        <button type="button" class="btn btn-primary" id="addClientBtn">Add a client application</button>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="logo" class="form-label">Logo URL:</label>
-                    <input type="url" id="logo" name="logo" class="form-control" />
+
+                <!-- Step 5: Certificates & secrets -->
+                <div class="step-content d-none" id="step-5">
+                    <div class="mb-4">
+                        <h5 class="fw-bold">Certificates</h5>
+                        <p>Certificates can be used as secrets to identify themselves to the authentication service.</p>
+                        <button type="button" class="btn btn-primary" id="uploadCertBtn">Upload certificate</button>
+                    </div>
+
+                    <div class="mb-3">
+                        <h5 class="fw-bold">Client secrets</h5>
+                        <p>Client secrets must be stored securely on your servers.</p>
+                        <button type="button" class="btn btn-primary" id="addSecretBtn">New client secret</button>
+                    </div>
+
+                    <table class="table table-bordered table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Description</th>
+                                <th>Expires</th>
+                                <th>Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="secretsTable">
+                            <!-- Secrets would be added here -->
+                        </tbody>
+                    </table>
                 </div>
-                <div class="d-grid">
-                    <button type="button" class="btn btn-primary" onclick="saveAndNext()">Next: Assign Roles</button>
+
+                <!-- Step 6: Token configuration -->
+                <div class="step-content d-none" id="step-6">
+                    <div class="mb-3">
+                        <h5 class="fw-bold">Optional claims</h5>
+                        <p>Optional claims are used to configure additional information which is returned in tokens.</p>
+                        <button type="button" class="btn btn-primary" id="addClaimBtn">Add optional claim</button>
+                    </div>
+
+                    <table class="table table-bordered table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Claim</th>
+                                <th>Description</th>
+                                <th>Audience</th>
+                            </tr>
+                        </thead>
+                        <tbody id="claimsTable">
+                            <!-- No claims added yet -->
+                        </tbody>
+                    </table>
                 </div>
-            </form>
+
+                <!-- Step 7: App roles -->
+                <div class="step-content d-none" id="step-7">
+                    <div class="mb-3">
+                        <p>App roles are custom roles to assign permissions to users or apps.</p>
+                        <button type="button" class="btn btn-primary" id="addRoleBtn">Create app role</button>
+                    </div>
+
+                    <table class="table table-bordered table-hover mt-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Display name</th>
+                                <th>Description</th>
+                                <th>Allowed member types</th>
+                                <th>Value</th>
+                                <th>State</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rolesTable">
+                            <!-- No app roles yet -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Step 8: Review & Create -->
+                <div class="step-content d-none" id="step-8">
+                    <div class="mb-4">
+                        <h5 class="fw-bold">Application manifest</h5>
+                        <p>The manifest is a JSON representation of the application registration.</p>
+                        
+                        <pre class="bg-light p-3 rounded border"><code id="manifestPreview">{
+    "id": "(will be generated)",
+    "deletedDateTime": null,
+    "appId": "(will be generated)",
+    "applicationTemplateId": null,
+    "disabledByMicrosoftStatus": null,
+    "displayName": "",
+    "description": null,
+    "groupMembershipClaims": null,
+    "identifierUris": [],
+    "publisherDomain": "nonprodborges.com",
+    "signInAudience": "AzureADandPersonalMicrosoftAccount",
+    "tags": [],
+    "tokenEncryptionKeyId": null
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-outline-secondary" id="prevBtn" disabled>Previous</button>
+                <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+            </div>
         </div>
     </div>
 </div>
-<p class="text-center mt-4">This page will allow you to add a new application.</p>
-<script>
-    function saveAndNext() {
-        var appData = {
-            appName: document.getElementById('appName').value,
-            appType: document.getElementById('appType').value,
-            redirectUri: document.getElementById('redirectUri').value,
-            replyUri: document.getElementById('replyUri').value,
-            logo: document.getElementById('logo').value
-        };
-        sessionStorage.setItem('appData', JSON.stringify(appData));
-        window.location.href = '/AppRoles';
+
+<style>
+    .step-indicators {
+        position: relative;
+        padding-top: 10px;
+        padding-bottom: 25px;
     }
+    
+    .step-indicators::before {
+        content: '';
+        position: absolute;
+        top: 25px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background-color: #e0e0e0;
+        z-index: 1;
+    }
+    
+    .step-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        width: 60px;
+    }
+    
+    .step-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: #757575;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+    
+    .step-item.active .step-circle {
+        background-color: #0d6efd;
+        color: white;
+    }
+    
+    .step-label {
+        font-size: 12px;
+        text-align: center;
+        color: #666;
+        white-space: nowrap;
+    }
+    
+    .step-item.active .step-label {
+        font-weight: 600;
+        color: #0d6efd;
+    }
+    
+    .form-label.fw-bold {
+        margin-bottom: 8px;
+    }
+    
+    .card {
+        border-radius: 8px;
+    }
+    
+    .card-header {
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Current step tracking
+        let currentStep = 1;
+        const totalSteps = 8;
+        
+        // Get elements
+        const stepTitle = document.getElementById('step-title');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progress-bar');
+        
+        // Step titles
+        const stepTitles = {
+            1: "Step 1: Basic Application Information",
+            2: "Step 2: Authentication",
+            3: "Step 3: API Permissions",
+            4: "Step 4: Expose an API",
+            5: "Step 5: Certificates & Secrets",
+            6: "Step 6: Token Configuration",
+            7: "Step 7: App Roles",
+            8: "Step 8: Review & Create"
+        };
+        
+        // Navigation functions
+        function goToStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.step-content').forEach(el => {
+                el.classList.add('d-none');
+            });
+            
+            // Show current step
+            document.getElementById(`step-${step}`).classList.remove('d-none');
+            
+            // Update step title
+            stepTitle.textContent = stepTitles[step];
+            
+            // Update progress bar
+            const progress = (step / totalSteps) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressBar.setAttribute('aria-valuenow', progress);
+            progressBar.textContent = `Step ${step}`;
+            
+            // Update step indicators
+            document.querySelectorAll('.step-item').forEach((el, index) => {
+                if (index + 1 <= step) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+            
+            // Handle button states
+            prevBtn.disabled = (step === 1);
+            
+            if (step === totalSteps) {
+                nextBtn.textContent = 'Create';
+                nextBtn.classList.remove('btn-primary');
+                nextBtn.classList.add('btn-success');
+                updateManifestPreview();
+            } else {
+                nextBtn.textContent = 'Next';
+                nextBtn.classList.add('btn-primary');
+                nextBtn.classList.remove('btn-success');
+            }
+            
+            // Update current step tracker
+            currentStep = step;
+        }
+        
+        // Handle next button click
+        nextBtn.addEventListener('click', function() {
+            if (currentStep < totalSteps) {
+                goToStep(currentStep + 1);
+            } else {
+                // This is the 'Create' action on the last step
+                createApplication();
+            }
+        });
+        
+        // Handle previous button click
+        prevBtn.addEventListener('click', function() {
+            if (currentStep > 1) {
+                goToStep(currentStep - 1);
+            }
+        });
+        
+        // Initialize the form
+        goToStep(1);
+        
+        // Redirect URI handling
+        document.getElementById('addRedirectUri').addEventListener('click', function() {
+            const uriInput = document.getElementById('redirectUri');
+            const uri = uriInput.value.trim();
+            
+            if (uri) {
+                const list = document.getElementById('redirectUriList');
+                const item = document.createElement('li');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                item.innerHTML = `
+                    ${uri}
+                    <button class="btn btn-sm btn-outline-danger remove-uri">×</button>
+                `;
+                list.appendChild(item);
+                uriInput.value = '';
+                
+                // Add event listener to the remove button
+                item.querySelector('.remove-uri').addEventListener('click', function() {
+                    list.removeChild(item);
+                });
+            }
+        });
+        
+        // Function to update the manifest preview
+        function updateManifestPreview() {
+            const displayName = document.getElementById('displayName').value || "(not provided)";
+            const description = document.getElementById('description').value || null;
+            const applicationTemplateId = document.getElementById('applicationTemplateId').value || null;
+            
+            // Build redirect URIs array
+            const redirectUris = [];
+            document.querySelectorAll('#redirectUriList li').forEach(li => {
+                const uriText = li.textContent.trim();
+                if (uriText) {
+                    redirectUris.push(uriText.replace('×', '').trim());
+                }
+            });
+            
+            // Build manifest object
+            const manifest = {
+                "id": "(will be generated)",
+                "deletedDateTime": null,
+                "appId": "(will be generated)",
+                "applicationTemplateId": applicationTemplateId,
+                "disabledByMicrosoftStatus": null,
+                "displayName": displayName,
+                "description": description,
+                "groupMembershipClaims": null,
+                "identifierUris": [],
+                "publisherDomain": "nonprodborges.com",
+                "signInAudience": "AzureADandPersonalMicrosoftAccount",
+                "tags": [],
+                "tokenEncryptionKeyId": null,
+                "web": {
+                    "redirectUris": redirectUris
+                }
+            };
+            
+            // Update the manifest preview
+            document.getElementById('manifestPreview').textContent = JSON.stringify(manifest, null, 2);
+        }
+        
+        // Function to create the application (would be replaced with actual API call)
+        function createApplication() {
+            // Gather all data from the form
+            const appData = {
+                displayName: document.getElementById('displayName').value,
+                description: document.getElementById('description').value,
+                applicationTemplateId: document.getElementById('applicationTemplateId').value,
+                // Additional fields would be collected here
+            };
+            
+            // For now, just show a success message and redirect
+            alert('Application created successfully! (This is a demo - no actual changes were made)');
+            window.location.href = '/ListApplications';
+        }
+    });
 </script>
