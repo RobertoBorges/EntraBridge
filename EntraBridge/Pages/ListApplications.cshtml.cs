@@ -67,7 +67,7 @@ namespace EntraBridge.Pages
         {
             try
             {
-                var result = await _appService.GetApplicationsPageAsync(30, null, searchTerm);
+                var result = await _appService.GetApplicationsPageAsync(0, null, searchTerm);
                 
                 return new JsonResult(new
                 {

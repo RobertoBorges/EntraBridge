@@ -26,8 +26,13 @@ public class GraphApplicationService
         try
         {
             var request = _graphClient.Applications.Request()
-                .Select("id,appId,displayName,createdDateTime")
-                .Top(pageSize);
+                .Select("id,appId,displayName,createdDateTime");
+                
+            // Only apply Top parameter if pageSize is greater than 0
+            if (pageSize > 0)
+            {
+                request = request.Top(pageSize);
+            }
 
             if (!string.IsNullOrEmpty(skipToken))
             {
@@ -36,8 +41,13 @@ public class GraphApplicationService
                         new QueryOption("$skiptoken", skipToken)
                     };
                 request = _graphClient.Applications.Request(options)
-                    .Select("id,appId,displayName,createdDateTime")
-                    .Top(pageSize);
+                    .Select("id,appId,displayName,createdDateTime");
+                    
+                // Only apply Top parameter if pageSize is greater than 0
+                if (pageSize > 0)
+                {
+                    request = request.Top(pageSize);
+                }
             }
 
             var result = await request.GetAsync();

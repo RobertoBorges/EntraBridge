@@ -31,11 +31,12 @@
                 <span class="input-group-text">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" class="form-control" id="searchInput" placeholder="Enter a display name or application (client) ID to search">
+                <input type="text" class="form-control" id="searchInput" placeholder="Type to filter or search for applications">
                 <button class="btn btn-primary" id="findAllEntraButton" type="button">
                     Find on All Entra
                 </button>
             </div>
+            <small class="text-muted mt-1">Type to filter loaded applications or click the button to search all applications on Entra</small>
         </div>
     </div>
 
@@ -109,6 +110,58 @@
             const visibleRows = document.querySelectorAll('#applicationsTable tbody tr:not(.d-none)').length;
             document.getElementById('applicationCount').textContent = visibleRows;
         };
+        
+        // Client-side filtering as user types
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = this.value.trim().toLowerCase();
+            const allRows = document.querySelectorAll('#applicationsTableBody tr');
+            
+            // If search term is empty, show all rows
+            if (searchTerm === '') {
+                allRows.forEach(row => row.classList.remove('d-none'));
+                updateAppCount();
+                return;
+            }
+            
+            let foundMatch = false;
+            
+            // Filter rows based on search term
+            allRows.forEach(row => {
+                const displayName = row.cells[0]?.textContent.toLowerCase() || '';
+                const applicationId = row.cells[1]?.textContent.toLowerCase() || '';
+                
+                // Check if row matches search term
+                if (displayName.includes(searchTerm) || applicationId.includes(searchTerm)) {
+                    row.classList.remove('d-none');
+                    foundMatch = true;
+                } else {
+                    row.classList.add('d-none');
+                }
+            });
+            
+            // Show "No matching applications" if no matches found
+            const noMatchRow = document.getElementById('noMatchRow');
+            if (!foundMatch && allRows.length > 0) {
+                if (!noMatchRow) {
+                    const tbody = document.getElementById('applicationsTableBody');
+                    const newRow = document.createElement('tr');
+                    newRow.id = 'noMatchRow';
+                    const td = document.createElement('td');
+                    td.colSpan = 4;
+                    td.className = 'text-center text-muted';
+                    td.textContent = 'No matching applications found in the loaded data. Try using "Find on All Entra" to search the entire directory.';
+                    newRow.appendChild(td);
+                    tbody.appendChild(newRow);
+                } else {
+                    noMatchRow.classList.remove('d-none');
+                }
+            } else if (noMatchRow) {
+                noMatchRow.classList.add('d-none');
+            }
+            
+            updateAppCount();
+        });
 
         // Find on All Entra functionality
         document.getElementById('findAllEntraButton').addEventListener('click', async function() {
@@ -297,6 +350,23 @@
                             tbody.appendChild(row);                            
                         }
                     });
+                    
+                    // Re-apply current search filter if there's a search term
+                    const currentSearchTerm = document.getElementById('searchInput').value.trim();
+                    if (currentSearchTerm) {
+                        const allRows = document.querySelectorAll('#applicationsTableBody tr');
+                        allRows.forEach(row => {
+                            const displayName = row.cells[0]?.textContent.toLowerCase() || '';
+                            const applicationId = row.cells[1]?.textContent.toLowerCase() || '';
+                            
+                            if (displayName.includes(currentSearchTerm.toLowerCase()) || 
+                                applicationId.includes(currentSearchTerm.toLowerCase())) {
+                                row.classList.remove('d-none');
+                            } else {
+                                row.classList.add('d-none');
+                            }
+                        });
+                    }
                     
                     // Update load more button with new page token
                     if (data.hasMoreRecords) {
