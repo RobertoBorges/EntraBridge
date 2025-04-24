@@ -21,7 +21,7 @@ public class GraphApplicationService
     }
 
     public async Task<(List<ApplicationViewModel> Applications, bool HasMore, string NextToken)>
-        GetApplicationsPageAsync(int pageSize, string skipToken = null)
+        GetApplicationsPageAsync(int pageSize, string skipToken = null, string appName = "")
     {
         try
         {
@@ -61,6 +61,7 @@ public class GraphApplicationService
                 CreatedOn = app.CreatedDateTime?.DateTime ?? DateTime.MinValue,
                 ApplicationType = GetApplicationTypeInitials(app)
             })
+            .Where(app => string.IsNullOrEmpty(appName) || app.DisplayName.Contains(appName, StringComparison.OrdinalIgnoreCase))
             .OrderBy(a => a.DisplayName)
             .ToList();
 

@@ -31,7 +31,10 @@
                 <span class="input-group-text">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" class="form-control" id="searchInput" placeholder="Start typing a display name or application (client) ID to filter these results">
+                <input type="text" class="form-control" id="searchInput" placeholder="Enter a display name or application (client) ID to search">
+                <button class="btn btn-primary" id="findAllEntraButton" type="button">
+                    Find on All Entra
+                </button>
             </div>
         </div>
     </div>
@@ -107,23 +110,111 @@
             document.getElementById('applicationCount').textContent = visibleRows;
         };
 
-        // Filter functionality
-        document.getElementById('searchInput').addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#applicationsTable tbody tr');
+        // Find on All Entra functionality
+        document.getElementById('findAllEntraButton').addEventListener('click', async function() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
             
-            rows.forEach(row => {
-                const displayName = row.cells[0]?.textContent.toLowerCase() || '';
-                const clientId = row.cells[1]?.textContent.toLowerCase() || '';
+            // Show loading spinner
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            loadingSpinner.classList.remove('d-none');
+            
+            try {
+                // Make AJAX call to search all Entra applications
+                const response = await fetch(`?handler=SearchApplications&searchTerm=${encodeURIComponent(searchTerm)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'include'
+                });
                 
-                if (displayName.includes(searchTerm) || clientId.includes(searchTerm)) {
-                    row.classList.remove('d-none');
-                } else {
-                    row.classList.add('d-none');
+                if (!response.ok) {
+                    throw new Error('Failed to search applications');
                 }
-            });
-            
-            updateAppCount();
+                
+                const data = await response.json();
+                
+                // Check for error in the response
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Clear existing table data
+                const tbody = document.getElementById('applicationsTableBody');
+                tbody.innerHTML = '';
+                
+                if (data.applications.length === 0) {
+                    const row = document.createElement('tr');
+                    const td = document.createElement('td');
+                    td.colSpan = 4;
+                    td.className = 'text-center';
+                    td.textContent = 'No applications found matching your search.';
+                    row.appendChild(td);
+                    tbody.appendChild(row);
+                } else {
+                    // Populate table with search results
+                    data.applications.forEach(app => {
+                        const row = document.createElement('tr');
+                        
+                        // Display name with app type
+                        const tdName = document.createElement('td');
+                        const spanType = document.createElement('span');
+                        let typeClass = 'bg-primary';
+                        if (app.applicationType === 'W') typeClass = 'bg-success';
+                        else if (app.applicationType === 'IA') typeClass = 'bg-info';
+                        spanType.className = `${typeClass} text-white px-2 rounded-1`;
+                        spanType.textContent = app.applicationType;
+                        tdName.appendChild(spanType);
+                        tdName.appendChild(document.createTextNode(' ' + app.displayName));
+                        row.appendChild(tdName);
+                        
+                        // Application ID
+                        const tdId = document.createElement('td');
+                        tdId.textContent = app.applicationId;
+                        row.appendChild(tdId);
+                        
+                        // Created date
+                        const tdCreated = document.createElement('td');
+                        const createdDate = new Date(app.createdOn);
+                        tdCreated.textContent = (createdDate.getMonth() + 1) + '/' + 
+                                                createdDate.getDate() + '/' + 
+                                                createdDate.getFullYear();
+                        row.appendChild(tdCreated);
+                        tbody.appendChild(row);
+                    });
+                }
+                
+                // Update load more button visibility
+                const loadMoreContainer = document.getElementById('loadMoreContainer');
+                if (data.hasMoreRecords) {
+                    loadMoreContainer.classList.remove('d-none');
+                    const loadMoreButton = document.getElementById('loadMoreButton');
+                    loadMoreButton.setAttribute('data-next-page', data.nextPage);
+                    loadMoreButton.setAttribute('data-next-token', data.nextPageToken);
+                    loadMoreButton.setAttribute('data-search-term', searchTerm);
+                    loadMoreButton.classList.remove('d-none');
+                } else {
+                    loadMoreContainer.classList.add('d-none');
+                }
+                
+            } catch (error) {
+                console.error('Error searching applications:', error);
+                // Show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'alert alert-danger mt-3';
+                errorDiv.textContent = 'Failed to search applications. Please try again.';
+                document.querySelector('.table-responsive').insertAdjacentElement('beforebegin', errorDiv);
+                
+                // Auto-remove error after 5 seconds
+                setTimeout(() => errorDiv.remove(), 5000);
+            } finally {
+                // Hide loading spinner
+                loadingSpinner.classList.add('d-none');
+                
+                // Update application count
+                updateAppCount();
+            }
         });
 
         // Load more functionality
@@ -137,9 +228,16 @@
                 try {
                     const nextPage = this.getAttribute('data-next-page');
                     const nextToken = this.getAttribute('data-next-token');
+                    const searchTerm = this.getAttribute('data-search-term') || '';
+                    
+                    // URL for request depends on whether we're searching or just loading more
+                    let url = `?handler=LoadMore&currentPage=${nextPage}&nextToken=${encodeURIComponent(nextToken || '')}`;
+                    if (searchTerm) {
+                        url = `?handler=SearchApplications&currentPage=${nextPage}&nextToken=${encodeURIComponent(nextToken || '')}&searchTerm=${encodeURIComponent(searchTerm)}`;
+                    }
                     
                     // Make AJAX call to load more data
-                    const response = await fetch(`?handler=LoadMore&currentPage=${nextPage}&nextToken=${encodeURIComponent(nextToken || '')}`, {
+                    const response = await fetch(url, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json',
@@ -175,7 +273,10 @@
                             // Display name with app type
                             const tdName = document.createElement('td');
                             const spanType = document.createElement('span');
-                            spanType.className = 'bg-primary text-white px-2 rounded-1';
+                            let typeClass = 'bg-primary';
+                            if (app.applicationType === 'W') typeClass = 'bg-success';
+                            else if (app.applicationType === 'IA') typeClass = 'bg-info';
+                            spanType.className = `${typeClass} text-white px-2 rounded-1`;
                             spanType.textContent = app.applicationType;
                             tdName.appendChild(spanType);
                             tdName.appendChild(document.createTextNode(' ' + app.displayName));

@@ -63,6 +63,27 @@ namespace EntraBridge.Pages
             }
         }
         
+        public async Task<IActionResult> OnGetSearchApplicationsAsync(string searchTerm)
+        {
+            try
+            {
+                var result = await _appService.GetApplicationsPageAsync(30, null, searchTerm);
+                
+                return new JsonResult(new
+                {
+                    applications = result.Applications,
+                    hasMoreRecords = result.HasMore,
+                    nextPageToken = result.NextToken,
+                    nextPage = CurrentPage + 1
+                });
+            }
+            catch (Exception ex)
+            {
+                AppInsights.TrackException(_telemetry, ex, "ListApplications:OnGetSearchApplicationsAsync");
+                return new JsonResult(new { error = "Failed to search application" }) { StatusCode = 500 };
+            }
+        }
+
         public async Task<IActionResult> OnGetLoadMoreAsync(int currentPage, string nextToken = null)
         {
             try
