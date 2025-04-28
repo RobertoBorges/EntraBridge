@@ -6,7 +6,9 @@
 <div class="container mt-4">
     <!-- Progress Bar -->
     <div class="progress mb-4" style="height: 30px;">
-        <div id="progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 12.5%; font-size: 16px; font-weight: 500;" aria-valuenow="12.5" aria-valuemin="0" aria-valuemax="100">Step 1</div>
+        <div id="progress-bar" class="progress-bar bg-primary" role="progressbar"
+            style="width: 12.5%; font-size: 16px; font-weight: 500;" aria-valuenow="12.5" aria-valuemin="0"
+            aria-valuemax="100">Step 1</div>
     </div>
 
     <!-- Step Indicators -->
@@ -81,7 +83,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="publisherDomain" class="form-label fw-bold">Publisher domain</label>
-                        <input type="text" class="form-control" id="publisherDomain" name="publisherDomain" value="nonprodborges.com" disabled>
+                        <input type="text" class="form-control" id="publisherDomain" name="publisherDomain"
+                            value="nonprodborges.com" disabled>
                     </div>
                 </div>
 
@@ -90,15 +93,18 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Platform configuration</label>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="webPlatform" name="platforms" value="web">
+                            <input class="form-check-input" type="checkbox" id="webPlatform" name="platforms"
+                                value="web">
                             <label class="form-check-label" for="webPlatform">Web</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="spaPlatform" name="platforms" value="spa">
+                            <input class="form-check-input" type="checkbox" id="spaPlatform" name="platforms"
+                                value="spa">
                             <label class="form-check-label" for="spaPlatform">Single-page application</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="mobilePlatform" name="platforms" value="mobile">
+                            <input class="form-check-input" type="checkbox" id="mobilePlatform" name="platforms"
+                                value="mobile">
                             <label class="form-check-label" for="mobilePlatform">Mobile and desktop</label>
                         </div>
                     </div>
@@ -107,27 +113,32 @@
                         <label class="form-label fw-bold">Redirect URIs</label>
                         <p class="text-muted small">URIs to which the authentication response can be sent.</p>
                         <div class="mb-2">
-                            <input type="url" class="form-control mb-2" id="redirectUri" name="redirectUri" placeholder="https://example.com/auth">
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="addRedirectUri">Add URI</button>
+                            <input type="url" class="form-control mb-2" id="webRedirectUri" name="webRedirectUri"
+                                placeholder="https://example.com/auth">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="addWebRedirectUri">Add
+                                URI</button>
                         </div>
-                        <ul class="list-group" id="redirectUriList">
+                        <ul class="list-group" id="webRedirectUriList">
                             <!-- Redirect URIs will be added here -->
                         </ul>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Front-channel logout URL</label>
-                        <input type="url" class="form-control" id="logoutUrl" name="logoutUrl" placeholder="https://example.com/logout">
+                        <input type="url" class="form-control" id="logoutUrl" name="logoutUrl"
+                            placeholder="https://example.com/logout">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Implicit grant and hybrid flows</label>
                         <div class="form-check mb-2">
-                            <input class="form-check-input" type="checkbox" id="accessTokens" name="implicitGrant" value="accessTokens">
+                            <input class="form-check-input" type="checkbox" id="accessTokens" name="implicitGrant"
+                                value="accessTokens">
                             <label class="form-check-label" for="accessTokens">Access tokens</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="idTokens" name="implicitGrant" value="idTokens" checked>
+                            <input class="form-check-input" type="checkbox" id="idTokens" name="implicitGrant"
+                                value="idTokens" checked>
                             <label class="form-check-label" for="idTokens">ID tokens</label>
                         </div>
                     </div>
@@ -166,7 +177,8 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Application ID URI</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="apiUri" name="apiUri" value="api://5cebd87a-57a8-411b-8085-4644055c9a5c" disabled>
+                            <input type="text" class="form-control" id="apiUri" name="apiUri"
+                                value="api://5cebd87a-57a8-411b-8085-4644055c9a5c" disabled>
                             <button class="btn btn-outline-primary" type="button">Edit</button>
                         </div>
                         <small class="text-muted">This ID uniquely identifies this API.</small>
@@ -180,8 +192,10 @@
 
                     <div class="mb-4">
                         <label class="form-label fw-bold">Authorized client applications</label>
-                        <p>Authorizing a client application indicates that this API trusts the application and users should not be asked to consent.</p>
-                        <button type="button" class="btn btn-primary" id="addClientBtn">Add a client application</button>
+                        <p>Authorizing a client application indicates that this API trusts the application and users
+                            should not be asked to consent.</p>
+                        <button type="button" class="btn btn-primary" id="addClientBtn">Add a client
+                            application</button>
                     </div>
                 </div>
 
@@ -263,7 +277,7 @@
                     <div class="mb-4">
                         <h5 class="fw-bold">Application manifest</h5>
                         <p>The manifest is a JSON representation of the application registration.</p>
-                        
+
                         <pre class="bg-light p-3 rounded border"><code id="manifestPreview">{
     "id": "(will be generated)",
     "deletedDateTime": null,
@@ -298,7 +312,7 @@
         padding-top: 10px;
         padding-bottom: 25px;
     }
-    
+
     .step-indicators::before {
         content: '';
         position: absolute;
@@ -309,7 +323,7 @@
         background-color: #e0e0e0;
         z-index: 1;
     }
-    
+
     .step-item {
         display: flex;
         flex-direction: column;
@@ -318,7 +332,7 @@
         z-index: 2;
         width: 60px;
     }
-    
+
     .step-circle {
         width: 40px;
         height: 40px;
@@ -332,32 +346,32 @@
         font-weight: 600;
         margin-bottom: 8px;
     }
-    
+
     .step-item.active .step-circle {
         background-color: #0d6efd;
         color: white;
     }
-    
+
     .step-label {
         font-size: 12px;
         text-align: center;
         color: #666;
         white-space: nowrap;
     }
-    
+
     .step-item.active .step-label {
         font-weight: 600;
         color: #0d6efd;
     }
-    
+
     .form-label.fw-bold {
         margin-bottom: 8px;
     }
-    
+
     .card {
         border-radius: 8px;
     }
-    
+
     .card-header {
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
@@ -365,17 +379,17 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Current step tracking
         let currentStep = 1;
         const totalSteps = 8;
-        
+
         // Get elements
         const stepTitle = document.getElementById('step-title');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const progressBar = document.getElementById('progress-bar');
-        
+
         // Step titles
         const stepTitles = {
             1: "Step 1: Basic Application Information",
@@ -387,26 +401,26 @@
             7: "Step 7: App Roles",
             8: "Step 8: Review & Create"
         };
-        
+
         // Navigation functions
         function goToStep(step) {
             // Hide all steps
             document.querySelectorAll('.step-content').forEach(el => {
                 el.classList.add('d-none');
             });
-            
+
             // Show current step
             document.getElementById(`step-${step}`).classList.remove('d-none');
-            
+
             // Update step title
             stepTitle.textContent = stepTitles[step];
-            
+
             // Update progress bar
             const progress = (step / totalSteps) * 100;
             progressBar.style.width = `${progress}%`;
             progressBar.setAttribute('aria-valuenow', progress);
             progressBar.textContent = `Step ${step}`;
-            
+
             // Update step indicators
             document.querySelectorAll('.step-item').forEach((el, index) => {
                 if (index + 1 <= step) {
@@ -415,10 +429,10 @@
                     el.classList.remove('active');
                 }
             });
-            
+
             // Handle button states
             prevBtn.disabled = (step === 1);
-            
+
             if (step === totalSteps) {
                 nextBtn.textContent = 'Create';
                 nextBtn.classList.remove('btn-primary');
@@ -429,13 +443,13 @@
                 nextBtn.classList.add('btn-primary');
                 nextBtn.classList.remove('btn-success');
             }
-            
+
             // Update current step tracker
             currentStep = step;
         }
-        
+
         // Handle next button click
-        nextBtn.addEventListener('click', function() {
+        nextBtn.addEventListener('click', function () {
             if (currentStep < totalSteps) {
                 goToStep(currentStep + 1);
             } else {
@@ -443,24 +457,24 @@
                 createApplication();
             }
         });
-        
+
         // Handle previous button click
-        prevBtn.addEventListener('click', function() {
+        prevBtn.addEventListener('click', function () {
             if (currentStep > 1) {
                 goToStep(currentStep - 1);
             }
         });
-        
+
         // Initialize the form
         goToStep(1);
-        
+
         // Redirect URI handling
-        document.getElementById('addRedirectUri').addEventListener('click', function() {
-            const uriInput = document.getElementById('redirectUri');
+        document.getElementById('addWebRedirectUri').addEventListener('click', function () {
+            const uriInput = document.getElementById('webRedirectUri');
             const uri = uriInput.value.trim();
-            
+
             if (uri) {
-                const list = document.getElementById('redirectUriList');
+                const list = document.getElementById('webRedirectUriList');
                 const item = document.createElement('li');
                 item.className = 'list-group-item d-flex justify-content-between align-items-center';
                 item.innerHTML = `
@@ -469,29 +483,29 @@
                 `;
                 list.appendChild(item);
                 uriInput.value = '';
-                
+
                 // Add event listener to the remove button
-                item.querySelector('.remove-uri').addEventListener('click', function() {
+                item.querySelector('.remove-uri').addEventListener('click', function () {
                     list.removeChild(item);
                 });
             }
         });
-        
+
         // Function to update the manifest preview
         function updateManifestPreview() {
             const displayName = document.getElementById('displayName').value || "(not provided)";
             const description = document.getElementById('description').value || null;
             const applicationTemplateId = document.getElementById('applicationTemplateId').value || null;
-            
+
             // Build redirect URIs array
-            const redirectUris = [];
-            document.querySelectorAll('#redirectUriList li').forEach(li => {
+            const webRedirectUris = [];
+            document.querySelectorAll('#webRedirectUriList li').forEach(li => {
                 const uriText = li.textContent.trim();
                 if (uriText) {
-                    redirectUris.push(uriText.replace('×', '').trim());
+                    webRedirectUris.push(uriText.replace('×', '').trim());
                 }
             });
-            
+
             // Build manifest object
             const manifest = {
                 "id": "(will be generated)",
@@ -508,14 +522,14 @@
                 "tags": [],
                 "tokenEncryptionKeyId": null,
                 "web": {
-                    "redirectUris": redirectUris
+                    "redirectUris": webRedirectUris
                 }
             };
-            
+
             // Update the manifest preview
             document.getElementById('manifestPreview').textContent = JSON.stringify(manifest, null, 2);
         }
-        
+
         // Function to create the application (would be replaced with actual API call)
         function createApplication() {
             // Gather all data from the form
@@ -525,7 +539,7 @@
                 applicationTemplateId: document.getElementById('applicationTemplateId').value,
                 // Additional fields would be collected here
             };
-            
+
             // For now, just show a success message and redirect
             alert('Application created successfully! (This is a demo - no actual changes were made)');
             window.location.href = '/ListApplications';
