@@ -92,35 +92,64 @@
                 <div class="step-content d-none" id="step-2">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Platform configuration</label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="webPlatform" name="platforms"
-                                value="web">
-                            <label class="form-check-label" for="webPlatform">Web</label>
+                        <p class="text-muted small">Configure redirect URLs for each platform your application will use.</p>
+                    </div>
+
+                    <!-- Web Platform Section -->
+                    <div class="mb-4 platform-section card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Web Platform</h6>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="spaPlatform" name="platforms"
-                                value="spa">
-                            <label class="form-check-label" for="spaPlatform">Single-page application</label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="mobilePlatform" name="platforms"
-                                value="mobile">
-                            <label class="form-check-label" for="mobilePlatform">Mobile and desktop</label>
+                        <div class="card-body">
+                            <p class="text-muted small">Add redirect URIs for web applications</p>
+                            <div class="mb-2">
+                                <input type="url" class="form-control mb-2" id="webRedirectUri" name="webRedirectUri"
+                                    placeholder="https://example.com/auth">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="addWebRedirectUri">Add
+                                    URI</button>
+                            </div>
+                            <ul class="list-group" id="webRedirectUriList">
+                                <!-- Web Redirect URIs will be added here -->
+                            </ul>
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Redirect URIs</label>
-                        <p class="text-muted small">URIs to which the authentication response can be sent.</p>
-                        <div class="mb-2">
-                            <input type="url" class="form-control mb-2" id="webRedirectUri" name="webRedirectUri"
-                                placeholder="https://example.com/auth">
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="addWebRedirectUri">Add
-                                URI</button>
+                    <!-- SPA Platform Section -->
+                    <div class="mb-4 platform-section card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Single-page application (SPA)</h6>
                         </div>
-                        <ul class="list-group" id="webRedirectUriList">
-                            <!-- Redirect URIs will be added here -->
-                        </ul>
+                        <div class="card-body">
+                            <p class="text-muted small">Add redirect URIs for single-page applications</p>
+                            <div class="mb-2">
+                                <input type="url" class="form-control mb-2" id="spaRedirectUri" name="spaRedirectUri"
+                                    placeholder="https://example.com/auth">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="addSpaRedirectUri">Add
+                                    URI</button>
+                            </div>
+                            <ul class="list-group" id="spaRedirectUriList">
+                                <!-- SPA Redirect URIs will be added here -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Platform Section -->
+                    <div class="mb-4 platform-section card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Mobile and desktop</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted small">Add redirect URIs for mobile and desktop applications</p>
+                            <div class="mb-2">
+                                <input type="url" class="form-control mb-2" id="mobileRedirectUri" name="mobileRedirectUri"
+                                    placeholder="myapp://auth">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="addMobileRedirectUri">Add
+                                    URI</button>
+                            </div>
+                            <ul class="list-group" id="mobileRedirectUriList">
+                                <!-- Mobile Redirect URIs will be added here -->
+                            </ul>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -376,6 +405,22 @@
         border-top-left-radius: 8px;
         border-top-right-radius: 8px;
     }
+    
+    /* Styles for platform sections */
+    .platform-section {
+        border-left: 3px solid #0d6efd;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: all 0.3s ease;
+    }
+    
+    .platform-section:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .platform-section .card-header {
+        background-color: rgba(13, 110, 253, 0.1);
+        border-bottom: 1px solid rgba(13, 110, 253, 0.2);
+    }
 </style>
 
 <script>
@@ -491,6 +536,50 @@
             }
         });
 
+        document.getElementById('addSpaRedirectUri').addEventListener('click', function () {
+            const uriInput = document.getElementById('spaRedirectUri');
+            const uri = uriInput.value.trim();
+
+            if (uri) {
+                const list = document.getElementById('spaRedirectUriList');
+                const item = document.createElement('li');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                item.innerHTML = `
+                    ${uri}
+                    <button class="btn btn-sm btn-outline-danger remove-uri">×</button>
+                `;
+                list.appendChild(item);
+                uriInput.value = '';
+
+                // Add event listener to the remove button
+                item.querySelector('.remove-uri').addEventListener('click', function () {
+                    list.removeChild(item);
+                });
+            }
+        });
+
+        document.getElementById('addMobileRedirectUri').addEventListener('click', function () {
+            const uriInput = document.getElementById('mobileRedirectUri');
+            const uri = uriInput.value.trim();
+
+            if (uri) {
+                const list = document.getElementById('mobileRedirectUriList');
+                const item = document.createElement('li');
+                item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                item.innerHTML = `
+                    ${uri}
+                    <button class="btn btn-sm btn-outline-danger remove-uri">×</button>
+                `;
+                list.appendChild(item);
+                uriInput.value = '';
+
+                // Add event listener to the remove button
+                item.querySelector('.remove-uri').addEventListener('click', function () {
+                    list.removeChild(item);
+                });
+            }
+        });
+
         // Function to update the manifest preview
         function updateManifestPreview() {
             const displayName = document.getElementById('displayName').value || "(not provided)";
@@ -503,6 +592,22 @@
                 const uriText = li.textContent.trim();
                 if (uriText) {
                     webRedirectUris.push(uriText.replace('×', '').trim());
+                }
+            });
+
+            const spaRedirectUris = [];
+            document.querySelectorAll('#spaRedirectUriList li').forEach(li => {
+                const uriText = li.textContent.trim();
+                if (uriText) {
+                    spaRedirectUris.push(uriText.replace('×', '').trim());
+                }
+            });
+
+            const mobileRedirectUris = [];
+            document.querySelectorAll('#mobileRedirectUriList li').forEach(li => {
+                const uriText = li.textContent.trim();
+                if (uriText) {
+                    mobileRedirectUris.push(uriText.replace('×', '').trim());
                 }
             });
 
@@ -523,6 +628,12 @@
                 "tokenEncryptionKeyId": null,
                 "web": {
                     "redirectUris": webRedirectUris
+                },
+                "spa": {
+                    "redirectUris": spaRedirectUris
+                },
+                "mobile": {
+                    "redirectUris": mobileRedirectUris
                 }
             };
 
